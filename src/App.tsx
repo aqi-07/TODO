@@ -2,7 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, Trash2, Edit2, Check, X, CheckSquare, Square } from 'lucide-react';
 import './index.css';
 
-const getRelativeDate = (isoString) => {
+interface Task {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: string;
+}
+
+const getRelativeDate = (isoString: string) => {
   const date = new Date(isoString);
   const today = new Date();
   if (date.toDateString() === today.toDateString()) return 'Today';
@@ -13,7 +20,7 @@ const getRelativeDate = (isoString) => {
 };
 
 function App() {
-  const [tasks, setTasks] = useState(() => {
+  const [tasks, setTasks] = useState<Task[]>(() => {
     const saved = localStorage.getItem('taskflow_tasks');
     if (saved) {
       try {
@@ -29,19 +36,19 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('all');
   
-  const [editingId, setEditingId] = useState(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState('');
 
   useEffect(() => {
     localStorage.setItem('taskflow_tasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  const handleAddTask = (e) => {
+  const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = newTaskText.trim();
     if (!trimmed) return;
     
-    const newTask = {
+    const newTask: Task = {
       id: crypto.randomUUID(),
       text: trimmed,
       completed: false,
@@ -52,20 +59,20 @@ function App() {
     setNewTaskText('');
   };
 
-  const handleDeleteTask = (id) => {
+  const handleDeleteTask = (id: string) => {
     setTasks(tasks.filter(t => t.id !== id));
   };
 
-  const handleToggleComplete = (id) => {
+  const handleToggleComplete = (id: string) => {
     setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
   };
 
-  const startEditing = (task) => {
+  const startEditing = (task: Task) => {
     setEditingId(task.id);
     setEditingText(task.text);
   };
 
-  const saveEdit = (id) => {
+  const saveEdit = (id: string) => {
     const trimmed = editingText.trim();
     if (!trimmed) return;
     
